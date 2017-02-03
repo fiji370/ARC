@@ -4,6 +4,11 @@ import string
 from nltk.corpus import stopwords
 from collections import Counter
 from nltk.collocations import *
+import nltk.corpus
+import nltk.tokenize.punkt
+import nltk.stem.snowball
+import string
+import grammar_check
 
 with open('Omnilingual.txt') as text:
     sci1 = text.read()
@@ -49,10 +54,15 @@ trigram_measures = nltk.collocations.TrigramAssocMeasures
 def interpret(text, doc):
     verbList = ["VB", "VBP", "VBD", "VBG", "VBN", "VBZ"]
     contextList = []
+    chunkedNouns = []
+    newNouns = []
+    final = []
     verbs = []
     nouns = []
+    fixedSents = []
     punct = set(string.punctuation)
     stop_words = set(nltk.corpus.stopwords.words('english'))
+    docS = doc
     doc = doc.lower()
     docSent = sent_tokenize(doc)
     doc = word_tokenize(doc)
@@ -68,16 +78,35 @@ def interpret(text, doc):
         if i[1] == 'NN':
             nouns.append(i[0])
         if i[1] in verbList:
-            verbs.append(i[0])
-    for i in doc:
-        for x in range(len(nouns)):
-            if i in nouns[x]:
-                contextList.append(nouns[x])
-            for b in range(len(contextList)):
-                if contextList[b] in nouns[x]:
-                    contextList[b] = nouns[x]
-                    
-    return contextList
+            nouns.append(i[0])
+    for b in range(len(docSent)):
+        docWords = word_tokenize(docSent[b])
+        for i in docWords:
+            if i in nouns:
+                newNouns.append(i)
+                newNouns = set(newNouns)
+                newNouns = list(newNouns)
+                contextList.append(docSent[b])
+    for x in range(len(contextList)):
+        for c in range(len(newNouns)):
+            if newNouns[c] in contextList[x]:
+                try:
+                    if newNouns[c + 1] in contextList[x + 1]:
+                        final.append(contextList[x])
+                        final.append(contextList[x + 1])
+                except:
+                    pass
+    tool = grammar_check.LanguageTool('en-US')
+    for i in final:
+        matches = tool.check(i)
+        fixedSents.append(grammar_check.correct(i, matches))
+    fixedSents = [i for i in fixedSents if word_tokenize(i) > 4]
+    print newNouns
+    seen = set()
+    seen_add = seen.add
+    fixedSents = [x for x in fixedSents if not (x in seen or seen_add(x))]
+    fixedSents = "\n".join(fixedSents)            
+    return fixedSents
 
 def clean_up(doc):
     stop = set(stopwords.words('english'))
