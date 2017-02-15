@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="aaed535b-f024-4b0c-8f6a-f2d7e2fd8ee8" kpf_version="5" name="Automatic Reading Comprehension.komodoproject">
+<preference-set idref="aaed535b-f024-4b0c-8f6a-f2d7e2fd8ee8" id="project" preftype="project">
+  <long id="prefs_version">1</long>
+<preference-set id="testPlans">
+<preference-set id="Automatic Reading Comprehension - Milestone One Testing">
+  <string id="command_line"></string>
+  <string relative="url" id="directory"></string>
+  <string id="language">Python - unittest</string>
+</preference-set>
+</preference-set>
+</preference-set>
+</project>
